@@ -1,0 +1,44 @@
+name: API Tests (Newman)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+jobs:
+  run-postman-tests:
+    name: Run Postman Collection via Newman
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Newman and reporters
+        run: npm install -g newman newman-reporter-htmlextra
+
+      - name: Run collection against Dev environment
+        run: |
+          newman run 12-hands-on-project/collections/PostmanMastery.postman_collection.json \
+            -e 12-hands-on-project/environments/dev.postman_environment.json \
+            -d 12-hands-on-project/data/users.csv \
+            -r cli,junit,htmlextra \
+            --reporter-junit-export newman-results.xml \
+            --reporter-htmlextra-export newman-report.html \
+            --reporter-htmlextra-darkTheme
+
+      - name: Upload Newman reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-reports
+          path: |
+            newman-results.xml
+            newman-report.html
+          retention-days: 14

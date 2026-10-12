@@ -1,0 +1,11 @@
+# Newman run artifacts (generated locally / in CI, not source)
+12-hands-on-project/newman/reports/
+newman-results.xml
+newman-report.html
+
+# OS / editor cruft
+.DS_Store
+*.swp
+
+# Node (if anyone installs Newman locally inside the repo)
+node_modules/
